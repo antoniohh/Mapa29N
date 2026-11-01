@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mapas Electorales de Extremadura · Validación Editorial 29N</title>
+  <title>Mapas Electorales de Extremadura · Vista Editorial de Noticia</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-page: #0f172a;
+      --bg-page: #f8fafc;
       --card-bg: #ffffff;
       --border-color: #e2e8f0;
       --text-main: #0f172a;
@@ -28,22 +28,24 @@
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #f1f5f9;
+      background: var(--bg-page);
       color: var(--text-main);
-      padding: 24px 32px;
-      line-height: 1.4;
-      min-width: 1200px;
+      padding: 32px 16px 64px;
+      line-height: 1.5;
+    }
+
+    /* Contenedor central que simula la anchura de una noticia en Méthode / HOY */
+    .article-container {
+      max-width: 880px;
+      margin: 0 auto;
     }
 
     /* Barra Superior Editorial */
     .dashboard-header {
       background: #ffffff;
       border-radius: 12px;
-      padding: 20px 28px;
-      margin-bottom: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      padding: 24px 28px;
+      margin-bottom: 32px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
       border: 1px solid var(--border-color);
     }
@@ -51,7 +53,7 @@
     .brand-section {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
 
     .brand-tagline {
@@ -80,20 +82,28 @@
     }
 
     .dashboard-header h1 {
-      font-size: 22px;
+      font-size: 26px;
       font-weight: 800;
       color: #0f172a;
-      letter-spacing: -0.3px;
+      letter-spacing: -0.4px;
+      line-height: 1.25;
+      margin-top: 4px;
     }
 
     .dashboard-header p.subtitle {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-muted);
+      margin-top: 4px;
+      line-height: 1.45;
     }
 
     .meta-badges {
       display: flex;
-      gap: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #f1f5f9;
     }
 
     .badge-pill {
@@ -102,7 +112,7 @@
       gap: 6px;
       background: #f8fafc;
       border: 1px solid #cbd5e1;
-      padding: 6px 12px;
+      padding: 5px 12px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 600;
@@ -116,32 +126,31 @@
       background: #10b981;
     }
 
-    /* Grid de los 3 Mapas */
-    .mapas-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      align-items: stretch;
+    /* Columna vertical de los 3 Mapas uno debajo del otro */
+    .mapas-columna {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
     }
 
-    /* Tarjeta individual */
+    /* Tarjeta individual de cada mapa */
     .mapa-card {
       background: var(--card-bg);
       border-radius: 12px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: box-shadow 0.2s ease;
     }
 
     .mapa-card:hover {
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.07);
     }
 
     .mapa-card-header {
-      padding: 16px 20px;
+      padding: 20px 24px;
       border-bottom: 1px solid #f1f5f9;
       background: #ffffff;
     }
@@ -174,191 +183,203 @@
     }
 
     .mapa-card-header h2 {
-      font-size: 16px;
-      font-weight: 700;
+      font-size: 19px;
+      font-weight: 800;
       color: #0f172a;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
+      letter-spacing: -0.2px;
     }
 
     .mapa-card-header p {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--text-muted);
-      line-height: 1.35;
+      line-height: 1.45;
     }
 
-    /* Contenedor del mapa */
+    /* Cuerpo del mapa */
     .mapa-card-body {
-      flex: 1;
-      min-height: 580px;
       position: relative;
       background: #f8fafc;
     }
 
-    /* Forzar que el contenedor del mapa ocupe todo el cuerpo de la tarjeta */
+    /* Altura adecuada para Extremadura en columna vertical */
     .mapa-card-body .voc-map-contenedor {
-      height: 580px !important;
+      height: 600px !important;
       border-radius: 0;
     }
 
-    /* Leyenda inferior de la tarjeta */
+    @media (max-width: 699px) {
+      .mapa-card-body .voc-map-contenedor {
+        height: 480px !important;
+      }
+    }
+
+    /* Pie con Leyenda */
     .mapa-card-footer {
-      padding: 12px 18px;
+      padding: 14px 24px;
       background: #ffffff;
       border-top: 1px solid #f1f5f9;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 12px;
-      font-size: 11px;
+      gap: 16px;
+      font-size: 12px;
     }
 
     .legend-title {
       font-weight: 700;
       color: #475569;
       text-transform: uppercase;
-      letter-spacing: 0.4px;
-      font-size: 10px;
-      margin-right: 2px;
+      letter-spacing: 0.5px;
+      font-size: 11px;
     }
 
     .legend-item {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       color: #1e293b;
       font-weight: 600;
     }
 
     .legend-dot {
-      width: 10px;
-      height: 10px;
+      width: 11px;
+      height: 11px;
       border-radius: 50%;
       flex-shrink: 0;
     }
 
     /* Pie general */
     .dashboard-footer {
-      margin-top: 24px;
+      margin-top: 40px;
       text-align: center;
       font-size: 12px;
       color: #64748b;
-      padding: 12px;
+      padding: 16px;
+      border-top: 1px solid var(--border-color);
     }
   </style>
 </head>
 <body>
 
-  <!-- Cabecera del Dashboard para Validación -->
-  <header class="dashboard-header">
-    <div class="brand-section">
-      <div class="brand-tagline">
-        <span class="brand-badge">HOY.es</span>
-        <span class="brand-sub">Mesa Electoral 29N · Grupo Vocento</span>
-      </div>
-      <h1>Monitor Territorial Electoral de Extremadura</h1>
-      <p class="subtitle">Escrutinio comparativo por secciones censales: Mayor aumento relativo, Autonómicas y Generales</p>
-    </div>
+  <div class="article-container">
 
-    <div class="meta-badges">
-      <div class="badge-pill">
-        <span class="badge-dot"></span>
-        <span>CDN jsDelivr Activo (v1.1.0)</span>
-      </div>
-      <div class="badge-pill">
-        <span>388 Municipios IGN</span>
-      </div>
-    </div>
-  </header>
-
-  <!-- Rejilla con los 3 Mapas Visibles Simultáneamente -->
-  <main class="mapas-grid">
-
-    <!-- MAPA 1: DIFERENCIAL 2019 - 2023 -->
-    <article class="mapa-card">
-      <div class="mapa-card-header">
-        <div class="card-top-row">
-          <span class="map-number-badge">Mapa 01</span>
-          <span class="map-data-source-badge">CDN: diferencia_votos</span>
+    <!-- Cabecera del Artículo / Dossier Editorial -->
+    <header class="dashboard-header">
+      <div class="brand-section">
+        <div class="brand-tagline">
+          <span class="brand-badge">HOY.es</span>
+          <span class="brand-sub">Mesa Electoral 29N · Grupo Vocento</span>
         </div>
-        <h2>Mayor Aumento de Votos</h2>
-        <p>Partido con mayor crecimiento porcentual por sección censal (2019 vs 2023).</p>
+        <h1>Radiografía Electoral de Extremadura por Secciones Censales</h1>
+        <p class="subtitle">Escrutinio comparativo detallado: mayor aumento relativo entre elecciones, resultados de autonómicas y voto al Congreso en las generales.</p>
       </div>
 
-      <div class="mapa-card-body">
-        <div id="mapa-diferencia"
-             data-mapa="diferencia"
-             data-data-url="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.1.0/dist/datos">
+      <div class="meta-badges">
+        <div class="badge-pill">
+          <span class="badge-dot"></span>
+          <span>CDN jsDelivr Activo (v1.1.0)</span>
+        </div>
+        <div class="badge-pill">
+          <span>388 Municipios IGN</span>
+        </div>
+        <div class="badge-pill">
+          <span>1.523 Secciones Censales</span>
         </div>
       </div>
+    </header>
 
-      <div class="mapa-card-footer">
-        <span class="legend-title">Mayor subida:</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#0056A3;"></span>PP</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#E30613;"></span>PSOE</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#63BE21;"></span>Vox</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#9169f4;"></span>Podemos</span>
-      </div>
-    </article>
+    <!-- Flujo Vertical de Mapas (en Columna) -->
+    <main class="mapas-columna">
 
-    <!-- MAPA 2: ELECCIONES AUTONÓMICAS -->
-    <article class="mapa-card">
-      <div class="mapa-card-header">
-        <div class="card-top-row">
-          <span class="map-number-badge">Mapa 02</span>
-          <span class="map-data-source-badge">CDN: resultados-censo-21d</span>
+      <!-- MAPA 1: DIFERENCIAL 2019 - 2023 -->
+      <article class="mapa-card">
+        <div class="mapa-card-header">
+          <div class="card-top-row">
+            <span class="map-number-badge">Mapa 01</span>
+            <span class="map-data-source-badge">CDN: diferencia_votos</span>
+          </div>
+          <h2>Mayor Crecimiento de Votos (2019 vs 2023)</h2>
+          <p>Partido que experimentó el mayor incremento porcentual en cada sección censal entre ambas convocatorias.</p>
         </div>
-        <h2>Elecciones Autonómicas</h2>
-        <p>Candidatura más votada y desglose de participación ciudadana por sección.</p>
-      </div>
 
-      <div class="mapa-card-body">
-        <div id="mapa-autonomicas"
-             data-mapa="autonomicas"
-             data-data-url="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.1.0/dist/datos">
+        <div class="mapa-card-body">
+          <div id="mapa-diferencia"
+               data-mapa="diferencia"
+               data-data-url="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.1.0/dist/datos">
+          </div>
         </div>
-      </div>
 
-      <div class="mapa-card-footer">
-        <span class="legend-title">Ganador:</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#E30613;"></span>PSOE</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#0056A3;"></span>PP</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#63BE21;"></span>Vox</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#9169f4;"></span>Podemos/UxEx</span>
-      </div>
-    </article>
-
-    <!-- MAPA 3: ELECCIONES GENERALES -->
-    <article class="mapa-card">
-      <div class="mapa-card-header">
-        <div class="card-top-row">
-          <span class="map-number-badge">Mapa 03</span>
-          <span class="map-data-source-badge">CDN: secciones_extremadura_votos</span>
+        <div class="mapa-card-footer">
+          <span class="legend-title">Mayor subida:</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#0056A3;"></span>PP</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#E30613;"></span>PSOE</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#63BE21;"></span>Vox</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#9169f4;"></span>Podemos</span>
         </div>
-        <h2>Elecciones Generales</h2>
-        <p>Fuerza con mayor respaldo electoral al Congreso de los Diputados.</p>
-      </div>
+      </article>
 
-      <div class="mapa-card-body">
-        <div id="mapa-generales"
-             data-mapa="generales"
-             data-data-url="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.1.0/dist/datos">
+      <!-- MAPA 2: ELECCIONES AUTONÓMICAS -->
+      <article class="mapa-card">
+        <div class="mapa-card-header">
+          <div class="card-top-row">
+            <span class="map-number-badge">Mapa 02</span>
+            <span class="map-data-source-badge">CDN: resultados-censo-21d</span>
+          </div>
+          <h2>Elecciones Autonómicas</h2>
+          <p>Candidatura más votada en las elecciones autonómicas y desglose de participación ciudadana.</p>
         </div>
-      </div>
 
-      <div class="mapa-card-footer">
-        <span class="legend-title">Ganador:</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#0056A3;"></span>PP</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#E30613;"></span>PSOE</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#63BE21;"></span>Vox</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#E51C55;"></span>Sumar</span>
-      </div>
-    </article>
+        <div class="mapa-card-body">
+          <div id="mapa-autonomicas"
+               data-mapa="autonomicas"
+               data-data-url="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.1.0/dist/datos">
+          </div>
+        </div>
 
-  </main>
+        <div class="mapa-card-footer">
+          <span class="legend-title">Ganador:</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#E30613;"></span>PSOE</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#0056A3;"></span>PP</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#63BE21;"></span>Vox</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#9169f4;"></span>Podemos/UxEx</span>
+        </div>
+      </article>
 
-  <footer class="dashboard-footer">
-    <p>Fuente de datos electorales: Ministerio del Interior y Junta de Extremadura · Cartografía base IGN / MapLibre GL · CMS Méthode HOY</p>
-  </footer>
+      <!-- MAPA 3: ELECCIONES GENERALES -->
+      <article class="mapa-card">
+        <div class="mapa-card-header">
+          <div class="card-top-row">
+            <span class="map-number-badge">Mapa 03</span>
+            <span class="map-data-source-badge">CDN: secciones_extremadura_votos</span>
+          </div>
+          <h2>Elecciones Generales</h2>
+          <p>Fuerza política con mayor número de votos en las elecciones al Congreso de los Diputados.</p>
+        </div>
+
+        <div class="mapa-card-body">
+          <div id="mapa-generales"
+               data-mapa="generales"
+               data-data-url="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.1.0/dist/datos">
+          </div>
+        </div>
+
+        <div class="mapa-card-footer">
+          <span class="legend-title">Ganador:</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#0056A3;"></span>PP</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#E30613;"></span>PSOE</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#63BE21;"></span>Vox</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#E51C55;"></span>Sumar</span>
+        </div>
+      </article>
+
+    </main>
+
+    <footer class="dashboard-footer">
+      <p>Fuente: Ministerio del Interior y Junta de Extremadura · Cartografía base IGN / MapLibre GL · CMS Méthode HOY.es</p>
+    </footer>
+
+  </div>
 
   <!-- Carga del bundle: en servidor Vite carga el módulo fuente; si se abre como archivo directo (file://), carga el bundle compilado -->
   <script type="module" src="/src/main.js"></script>
