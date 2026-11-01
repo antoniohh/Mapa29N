@@ -360,13 +360,12 @@
     <p>Fuente de datos electorales: Ministerio del Interior y Junta de Extremadura · Cartografía base IGN / MapLibre GL · CMS Méthode HOY</p>
   </footer>
 
-  <!-- Carga del bundle en desarrollo con Vite o bundle compilado -->
+  <!-- Carga del bundle: en servidor Vite carga el módulo fuente; si se abre como archivo directo (file://), carga el bundle compilado -->
   <script type="module" src="/src/main.js"></script>
   <script>
-    // Fallback en caso de abrir index.html directamente sin servidor Vite
-    if (!window.MapasElecciones) {
+    if (window.location.protocol === 'file:') {
       const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.1.0/dist/mapas-elecciones.js';
+      script.src = './dist/mapas-elecciones.js';
       document.body.appendChild(script);
     }
   </script>

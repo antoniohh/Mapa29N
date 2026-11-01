@@ -1,7 +1,19 @@
+import { setWorkerUrl } from 'maplibre-gl';
+import workerScript from 'maplibre-gl/dist/maplibre-gl-worker.mjs?raw';
 import { renderMapaDiferencia } from './mapas/mapa_diferencia.js';
 import { renderMapaAutonomicas } from './mapas/mapa_autonomicas.js';
 import { renderMapaGenerales } from './mapas/mapa_generales.js';
 import mapaStyles from './styles/mapa.css?inline';
+
+// Inicializar el Web Worker de MapLibre en línea para evitar dependencias externas de archivos .mjs
+if (typeof window !== 'undefined' && typeof Blob !== 'undefined' && typeof URL !== 'undefined') {
+  try {
+    const blob = new Blob([workerScript], { type: 'text/javascript' });
+    setWorkerUrl(URL.createObjectURL(blob));
+  } catch {
+    setWorkerUrl('https://unpkg.com/maplibre-gl@6.16.0/dist/maplibre-gl-worker.mjs');
+  }
+}
 
 /**
  * Inyecta una única vez los estilos de MapLibre y del componente en el <head>
