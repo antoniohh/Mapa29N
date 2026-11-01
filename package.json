@@ -1,0 +1,18 @@
+{
+  "name": "mapas-elecciones-extremadura",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Librería y mapas electorales interactivos de Extremadura para CMS Méthode",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  },
+  "dependencies": {
+    "maplibre-gl": "^6.16.0"
+  }
+}

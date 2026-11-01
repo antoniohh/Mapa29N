@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diferencia de Votos en Extremadura por Secciones</title>
+    <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet" />
+    <style>
+        .voc-map-contenedor {
+            width: 100%;
+            height: 600px;
+            position: relative;
+            font-family: 'Guardian TextSans Regular', sans-serif;
+        }
+
+        #voc-map {
+            width: 100%;
+            height: 600px;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width:699px) {
+            #voc-map {
+                height: 500px;
+            }
+        }
+
+        .maplibregl-popup {
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .maplibregl-popup-content {
+            background: transparent !important;
+            border-radius: 0px !important;
+            box-shadow: none !important;
+            padding: 0px !important;
+        }
+
+        .maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+            border-top-color: #ffffff !important;
+        }
+
+        .maplibregl-popup-anchor-top .maplibregl-popup-tip {
+            border-bottom-color: #ffffff !important;
+        }
+
+        .voc-custom-tooltip {
+            width: 250px;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            background: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06);
+            font-family: 'Guardian TextSans Regular', sans-serif;
+            font-size: 13px;
+            line-height: 1.35;
+            color: #202020;
+        }
+
+        .voc-tooltip-header {
+            border-bottom: 1px solid #eaeAEA;
+            padding-bottom: 7px;
+            margin-bottom: 8px;
+        }
+
+        .voc-tooltip-title {
+            font-family: 'Guardian TextSans Medium', sans-serif;
+            font-weight: bold;
+            font-size: 15px;
+            color: #111111;
+            line-height: 1.25;
+            display: block;
+        }
+
+        .voc-tooltip-subtitle {
+            font-size: 11px;
+            color: #767676;
+            margin-top: 2px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .voc-tooltip-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f7f7f8;
+            border-radius: 4px;
+            padding: 5px 8px;
+            margin-bottom: 9px;
+            font-size: 12px;
+        }
+
+        .voc-metric-label {
+            color: #555555;
+        }
+
+        .voc-metric-value {
+            font-family: 'Guardian TextSans Medium', sans-serif;
+            font-weight: bold;
+        }
+
+        .voc-tooltip-results {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .voc-party-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            gap: 6px;
+        }
+
+        .voc-party-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 75px;
+            max-width: 90px;
+        }
+
+        .voc-party-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .voc-party-name {
+            font-family: 'Guardian TextSans Medium', sans-serif;
+            font-weight: 500;
+            color: #222222;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .voc-party-bar-track {
+            flex: 1;
+            height: 5px;
+            background: #edeef0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .voc-party-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .voc-party-pct {
+            font-family: 'Guardian TextSans Medium', sans-serif;
+            font-weight: bold;
+            min-width: 48px;
+            text-align: right;
+        }
+
+        .voc-map-search-box {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            background: #ffffff;
+            padding: 4px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            gap: 4px;
+            width: calc(100% - 70px);
+            max-width: 300px;
+        }
+
+        .voc-map-search-input {
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            font-size: 13px;
+            border-radius: 3px;
+            flex-grow: 1;
+            outline: none;
+            font-family: 'Guardian TextSans Regular', sans-serif;
+        }
+
+        .voc-map-search-button {
+            background: #202020;
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .voc-map-search-button:hover {
+            background: #404040;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="voc-map-contenedor">
+        <div class="voc-map-search-box"> <input type="text" id="voc-map-search-input" class="voc-map-search-input"
+                placeholder="Buscar calle o municipio..." /> <button id="voc-map-search-btn"
+                class="voc-map-search-button">Buscar</button> </div>
+        <div id="voc-map"></div>
+    </div>
+    <script src="datos_diferencia.js"></script>
+    <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
+    <script> var map = new maplibregl.Map({ container: 'voc-map', style: 'https://static.hoy.es/comun/html/base_DW_gray.json', center: [-6.15, 39.15], zoom: 7 }); map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right'); var geojsonUrl = 'https://raw.githubusercontent.com/maria-diaz-hoy/Mapas/main/diferencia_votos_extremadura_limpio.geojson'; var MUNICIPIOS_EXTREMADURA = { "06001": "Acedera", "06002": "Aceuchal", "06003": "Ahillones", "06004": "Alange", "06005": "Albuera, La", "06006": "Alburquerque", "06007": "Alconchel", "06008": "Alconera", "06009": "Aljucén", "06010": "Almendral", "06011": "Almendralejo", "06012": "Arroyo de San Serván", "06013": "Atalaya", "06014": "Azuaga", "06015": "Badajoz", "06016": "Barcarrota", "06017": "Baterno", "06018": "Benquerencia de la Serena", "06019": "Berlanga", "06020": "Bienvenida", "06021": "Bodonal de la Sierra", "06022": "Burguillos del Cerro", "06023": "Cabeza del Buey", "06024": "Cabeza la Vaca", "06025": "Calamonte", "06026": "Calera de León", "06027": "Calzadilla de los Barros", "06028": "Campanario", "06029": "Campillo de Llerena", "06030": "Capilla", "06031": "Carmonita", "06032": "Carrascalejo, El", "06033": "Casas de Don Pedro", "06034": "Casas de Reina", "06035": "Castilblanco", "06036": "Castuera", "06037": "Codosera, La", "06038": "Cordobilla de Lácara", "06039": "Coronada, La", "06040": "Corte de Peleas", "06041": "Cristina", "06042": "Cheles", "06043": "Don Álvaro", "06044": "Don Benito", "06045": "Entrín Bajo", "06046": "Esparragalejo", "06047": "Esparragosa de la Serena", "06048": "Esparragosa de Lares", "06049": "Feria", "06050": "Fregenal de la Sierra", "06051": "Fuenlabrada de los Montes", "06052": "Fuente de Cantos", "06053": "Fuente del Arco", "06054": "Fuente del Maestre", "06055": "Fuentes de León", "06056": "Garbayuela", "06057": "Garlitos", "06058": "Garrovilla, La", "06059": "Granja de Torrehermosa", "06060": "Guareña", "06061": "Haba, La", "06062": "Helechosa de los Montes", "06063": "Herrera del Duque", "06064": "Higuera de la Serena", "06065": "Higuera de Llerena", "06066": "Higuera de Vargas", "06067": "Higuera la Real", "06068": "Hinojosa del Valle", "06069": "Hornachos", "06070": "Jerez de los Caballeros", "06071": "Lapa, La", "06072": "Lobón", "06073": "Llera", "06074": "Llerena", "06075": "Magacela", "06076": "Maguilla", "06077": "Malcocinado", "06078": "Malpartida de la Serena", "06079": "Manchita", "06080": "Medellín", "06081": "Medina de las Torres", "06082": "Mengabril", "06083": "Mérida", "06084": "Mirandilla", "06085": "Monesterio", "06086": "Montemolín", "06087": "Monterrubio de la Serena", "06088": "Montijo", "06089": "Morera, La", "06090": "Nava de Santiago, La", "06091": "Navalvillar de Pela", "06092": "Nogales", "06093": "Oliva de la Frontera", "06094": "Oliva de Mérida", "06095": "Olivenza", "06096": "Orellana de la Sierra", "06097": "Orellana la Vieja", "06098": "Palomas", "06099": "Parra, La", "06100": "Peñalsordo", "06101": "Peraleda del Zaucejo", "06102": "Puebla de Alcocer", "06103": "Puebla de la Calzada", "06104": "Puebla de la Reina", "06105": "Puebla del Maestre", "06106": "Puebla del Prior", "06107": "Puebla de Obando", "06108": "Puebla de Sancho Pérez", "06109": "Quintana de la Serena", "06110": "Reina", "06111": "Rena", "06112": "Retamal de Llerena", "06113": "Ribera del Fresno", "06114": "Risco", "06115": "Roca de la Sierra, La", "06116": "Salvaleón", "06117": "Salvatierra de los Barros", "06118": "Sancti-Spíritus", "06119": "San Pedro de Mérida", "06120": "Santa Amalia", "06121": "Santa Marta", "06122": "Santos de Maimona, Los", "06123": "San Vicente de Alcántara", "06124": "Segura de León", "06125": "Siruela", "06126": "Solana de los Barros", "06127": "Talarrubias", "06128": "Talavera la Real", "06129": "Táliga", "06130": "Tamurejo", "06131": "Torre de Miguel Sesmero", "06132": "Torremayor", "06133": "Torremejía", "06134": "Trasierra", "06135": "Trujillanos", "06136": "Usagre", "06137": "Valdecaballeros", "06138": "Valdetorres", "06139": "Valencia de las Torres", "06140": "Valencia del Mombuey", "06141": "Valencia del Ventoso", "06142": "Valverde de Burguillos", "06143": "Valverde de Leganés", "06144": "Valverde de Llerena", "06145": "Valverde de Mérida", "06146": "Valle de la Serena", "06147": "Valle de Matamoros", "06148": "Valle de Santa Ana", "06149": "Villafranca de los Barros", "06150": "Villagarcía de la Torre", "06151": "Villagonzalo", "06152": "Villalba de los Barros", "06153": "Villanueva de la Serena", "06154": "Villanueva del Fresno", "06155": "Villar del Rey", "06156": "Villar de Rena", "06157": "Villarta de los Montes", "06158": "Zafra", "06159": "Zahínos", "06160": "Zalamea de la Serena", "06161": "Zarza-Capilla", "06162": "Zarza, La", "06901": "Valdelacalzada", "06902": "Pueblonuevo del Guadiana", "06903": "Guadiana", "10001": "Abadía", "10002": "Abertura", "10003": "Acebo", "10004": "Acehúche", "10005": "Aceituna", "10006": "Ahigal", "10007": "Albalá", "10008": "Alcántara", "10009": "Alcollarín", "10010": "Alcuéscar", "10011": "Aldeacentenera", "10012": "Aldea del Cano", "10013": "Aldea del Obispo, La", "10014": "Aldeanueva de la Vera", "10015": "Aldeanueva del Camino", "10016": "Aldehuela del Jerte", "10017": "Alía", "10018": "Aliseda", "10019": "Almaraz", "10020": "Almoharín", "10021": "Arroyo de la Luz", "10022": "Arroyomolinos de la Vera", "10023": "Arroyomolinos", "10024": "Baños de Montemayor", "10025": "Barrado", "10026": "Belvís de Monroy", "10027": "Benquerencia", "10028": "Berrocalejo", "10029": "Berzocana", "10030": "Bohonal de Ibor", "10031": "Botija", "10032": "Brozas", "10033": "Cabañas del Castillo", "10034": "Cabezabellosa", "10035": "Cabezuela del Valle", "10036": "Cabrero", "10037": "Cáceres", "10038": "Cachorrilla", "10039": "Cadalso", "10040": "Calzadilla", "10041": "Caminomorisco", "10042": "Campillo de Deleitosa", "10043": "Campo Lugar", "10044": "Cañamero", "10045": "Cañaveral", "10046": "Carbajo", "10047": "Carcaboso", "10048": "Carrascalejo", "10049": "Casar de Cáceres", "10050": "Casar de Palomero", "10051": "Casares de las Hurdes", "10052": "Casas de Don Antonio", "10053": "Casas de Don Gómez", "10054": "Casas del Castañar", "10055": "Casas del Monte", "10056": "Casas de Millán", "10057": "Casas de Miravete", "10058": "Casatejada", "10059": "Casillas de Coria", "10060": "Castañar de Ibor", "10061": "Ceclavín", "10062": "Cedillo", "10063": "Cerezo", "10064": "Cilleros", "10065": "Collado de la Vera", "10066": "Conquista de la Sierra", "10067": "Coria", "10068": "Cuacos de Yuste", "10069": "Cumbre, La", "10070": "Deleitosa", "10071": "Descargamaría", "10072": "Eljas", "10073": "Escurial", "10075": "Fresnedoso de Ibor", "10076": "Galisteo", "10077": "Garciaz", "10078": "Garganta, La", "10079": "Garganta la Olla", "10080": "Gargantilla", "10081": "Gargüera", "10082": "Garrovillas de Alconétar", "10083": "Garvín", "10084": "Gata", "10085": "Gordo, El", "10086": "Granja, La", "10087": "Guadalupe", "10088": "Guijo de Coria", "10089": "Guijo de Galisteo", "10090": "Guijo de Granadilla", "10091": "Guijo de Santa Bárbara", "10092": "Herguijuela", "10093": "Hernán-Pérez", "10094": "Herrera de Alcántara", "10095": "Herreruela", "10096": "Hervás", "10097": "Higuera de Albalati", "10098": "Hinojal", "10099": "Holguera", "10100": "Hoyos", "10101": "Huélaga", "10102": "Ibahernando", "10103": "Jaraicejo", "10104": "Jaraíz de la Vera", "10105": "Jarandilla de la Vera", "10106": "Jarilla", "10107": "Jerte", "10108": "Ladrillar", "10109": "Logrosán", "10110": "Losar de la Vera", "10111": "Madrigal de la Vera", "10112": "Madrigalejo", "10113": "Madroñera", "10114": "Majadas", "10115": "Malpartida de Cáceres", "10116": "Malpartida de Plasencia", "10117": "Marchagaz", "10118": "Mata de Alcántara", "10119": "Membrío", "10120": "Mesas de Ibor", "10121": "Miajadas", "10122": "Millanes", "10123": "Mirabel", "10124": "Mohedas de Granadilla", "10125": "Monroy", "10126": "Montánchez", "10127": "Montehermoso", "10128": "Moraleja", "10129": "Morcillo", "10130": "Navaconcejo", "10131": "Navalmoral de la Mata", "10132": "Navalvillar de Ibor", "10133": "Navas del Madroño", "10134": "Navezuelas", "10135": "Nuñomoral", "10136": "Oliva de Plasencia", "10137": "Palomero", "10138": "Pasarón de la Vera", "10139": "Pedroso de Acim", "10140": "Peraleda de la Mata", "10141": "Peraleda de San Román", "10142": "Perales del Puerto", "10143": "Pescueza", "10144": "Pesga, La", "10145": "Piedras Albas", "10146": "Pinofranqueado", "10147": "Piornal", "10148": "Plasencia", "10149": "Plasenzuela", "10150": "Portaje", "10151": "Portezuelo", "10152": "Pozuelo de Zarzón", "10153": "Puerto de Santa Cruz", "10154": "Rebollar", "10155": "Riolobos", "10156": "Robledillo de Gata", "10157": "Robledillo de la Vera", "10158": "Robledillo de Trujillo", "10159": "Robledollano", "10160": "Romangordo", "10161": "Ruanes", "10162": "Salorino", "10163": "Salvatierra de Santiago", "10164": "San Martín de Trevejo", "10165": "Santa Ana", "10166": "Santa Cruz de la Sierra", "10167": "Santa Cruz de Paniagua", "10168": "Santa Marta de Magasca", "10169": "Santiago de Alcántara", "10170": "Santiago del Campo", "10171": "Santibáñez el Alto", "10172": "Santibáñez el Bajo", "10173": "Saucedilla", "10174": "Segura de Toro", "10175": "Serradilla", "10176": "Serrejón", "10177": "Sierra de Fuentes", "10178": "Talaván", "10179": "Talaveruela de la Vera", "10180": "Talayuela", "10181": "Tejeda de Tiétar", "10182": "Toril", "10183": "Tornavacas", "10184": "Torno, El", "10185": "Torrecilla de los Ángeles", "10186": "Torrecillas de la Tiesa", "10187": "Torre de Don Miguel", "10188": "Torre de Santa María", "10189": "Torrejoncillo", "10190": "Torrejón el Rubio", "10191": "Torremenga", "10192": "Torremocha", "10193": "Torreorgaz", "10194": "Torrequemada", "10195": "Trujillo", "10196": "Valdastillas", "10197": "Valdecañas de Tajo", "10198": "Valdefuentes", "10199": "Valdehúncar", "10200": "Valdelacasa de Tajo", "10201": "Valdemorales", "10202": "Valdeobispo", "10203": "Valencia de Alcántara", "10204": "Valverde de la Vera", "10205": "Valverde del Fresno", "10206": "Viandar de la Vera", "10207": "Villa del Campo", "10208": "Villa del Rey", "10209": "Villamesías", "10210": "Villamiel", "10211": "Villanueva de la Sierra", "10212": "Villanueva de la Vera", "10213": "Villar del Pedroso", "10214": "Villar de Plasencia", "10215": "Villasbuenas de Gata", "10216": "Zarza de Granadilla", "10217": "Zarza de Montánchez", "10218": "Zarza la Mayor", "10219": "Zorita", "10901": "Rosalejo", "10902": "Vegaviana", "10903": "Alagón del Río", "10904": "Tiétar", "10905": "Pueblonuevo de Miramontes" }; function getProp(props, possibleNames) { if (!props) return null; var lowerNames = possibleNames.map(function (n) { return n.toLowerCase(); }); for (var key in props) { if (lowerNames.indexOf(key.toLowerCase()) !== -1) { var val = props[key]; if (val !== undefined && val !== null && String(val).trim() !== '') { return val; } } } return null; } function parseDiff(val) { if (val === undefined || val === null) return null; var s = String(val).trim(); if (!s || s === '-' || s.toLowerCase() === 'null' || s.toLowerCase() === 'nan' || s === '#n/a') { return null; } s = s.replace(/%/g, '').replace(/\u00a0/g, ' ').trim(); if (s.indexOf('.') !== -1 && s.indexOf(',') !== -1) { if (s.lastIndexOf(',') > s.lastIndexOf('.')) { s = s.replace(/\./g, '').replace(',', '.'); } else { s = s.replace(/,/g, ''); } } else if (s.indexOf(',') !== -1) { s = s.replace(',', '.'); } var num = parseFloat(s); return isNaN(num) ? null : num; } function formatDiff(num) { if (num === null || isNaN(num)) return '-'; var formatted = Math.abs(num).toFixed(2).replace('.', ',') + '%'; if (num > 0) return '+' + formatted; if (num < 0) return '-' + formatted; return '0,00%'; } function cleanPartyName(name) { if (!name) return ''; var p = String(name).trim(); var upper = p.toUpperCase(); if (upper === 'PP' || upper.indexOf('POPULAR') !== -1) return 'PP'; if (upper === 'PSOE' || upper.indexOf('SOCIALISTA') !== -1) return 'PSOE'; if (upper === 'VOX') return 'Vox'; if (upper === 'SUMAR') return 'Sumar'; if (upper === 'PODEMOS' || upper.indexOf('UNIDAS PODEMOS') !== -1 || upper === 'UXEX') return 'Podemos'; if (upper === 'CS' || upper.indexOf('CIUDADANOS') !== -1) return 'Cs'; if (upper === 'BQEX' || upper.indexOf('EXTREME') !== -1) return 'BQEX'; if (upper === 'PACMA') return 'PACMA'; return p; } function getColorForParty(partyName) { var p = cleanPartyName(partyName); if (p === 'PP') return '#0056A3'; if (p === 'PSOE') return '#E30613'; if (p === 'Vox') return '#63BE21'; if (p === 'Sumar') return '#E51C55'; if (p === 'Podemos' || p === 'UxEx') return '#9169f4'; if (p === 'Cs') return '#EB6109'; if (p === 'BQEX') return '#009540'; return '#A0A0A0'; } function formatPlaceName(str) { if (!str) return 'Municipio'; var s = String(str).trim(); s = s.replace(/^\d+[\s\-_]+/, ''); if (s.indexOf(',') !== -1) { var commaParts = s.split(','); if (commaParts.length === 2 && /^(el|la|los|las)$/i.test(commaParts[1].trim())) { s = commaParts[1].trim() + ' ' + commaParts[0].trim(); } } var words = s.toLowerCase().split(/\s+/); var minorWords = ['de', 'del', 'la', 'las', 'los', 'el', 'en', 'y', 'e', 'd\'']; return words.map(function (word, idx) { if (idx > 0 && minorWords.indexOf(word) !== -1) return word; return word.charAt(0).toUpperCase() + word.slice(1); }).join(' '); } function cargarDatosEnMapa(data) { console.log('GeoJSON de diferencias cargado correctamente:', data); data.features.forEach(function (feature) { var props = feature.properties || {}; var diffMap = [{ key: 'vox_dif', name: 'Vox' }, { key: 'pp_dif', name: 'PP' }, { key: 'podemos_dif', name: 'Podemos' }, { key: 'psoe_dif', name: 'PSOE' }]; var maxIncrease = 0; var partidoMayorAumento = null; diffMap.forEach(function (item) { var num = parseDiff(props[item.key]); if (num !== null && num > maxIncrease) { maxIncrease = num; partidoMayorAumento = item.name; } }); if (partidoMayorAumento) { props.color_coropleta = getColorForParty(partidoMayorAumento); props.partido_mayor_aumento = partidoMayorAumento; } else { props.color_coropleta = '#A0A0A0'; props.partido_mayor_aumento = null; } }); map.addSource('diferencia-votos', { type: 'geojson', data: data }); map.addLayer({ id: 'diferencia-fill', type: 'fill', source: 'diferencia-votos', paint: { 'fill-color': ['coalesce', ['get', 'color_coropleta'], '#A0A0A0'], 'fill-opacity': 0.75 } }); map.addLayer({ id: 'diferencia-line', type: 'line', source: 'diferencia-votos', paint: { 'line-color': '#FFFFFF', 'line-width': 0.5, 'line-opacity': 0.6 } }); var bounds = new maplibregl.LngLatBounds(); data.features.forEach(function (feature) { if (feature.geometry && feature.geometry.coordinates) { var coordinates = feature.geometry.coordinates.flat(Infinity); for (var i = 0; i < coordinates.length; i += 2) { if (!isNaN(coordinates[i]) && !isNaN(coordinates[i + 1])) { bounds.extend([coordinates[i], coordinates[i + 1]]); } } } }); if (!bounds.isEmpty()) { map.fitBounds(bounds, { padding: 30 }); } var popup = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 12 }); map.on('mousemove', 'diferencia-fill', function (e) { map.getCanvas().style.cursor = 'pointer'; var props = e.features[0].properties; var rawLocalidad = getProp(props, ['municipio', 'nombre', 'nmun', 'localidad']); var seccionCode = getProp(props, ['cusec', 'csec', 'seccion', 'sec']) || ''; var cusecStr = String(seccionCode).trim(); if (!rawLocalidad && cusecStr.length >= 5) { var cumun = cusecStr.substring(0, 5); if (MUNICIPIOS_EXTREMADURA[cumun]) { rawLocalidad = MUNICIPIOS_EXTREMADURA[cumun]; } } var localidad = formatPlaceName(rawLocalidad || 'Municipio'); var seccionSubtitle = ''; if (cusecStr && cusecStr.length === 10) { var distNum = parseInt(cusecStr.substring(5, 7), 10); var secNum = parseInt(cusecStr.substring(7, 10), 10); if (!isNaN(distNum) && !isNaN(secNum)) { seccionSubtitle = 'Distrito ' + distNum + ' · Sección ' + secNum; } else { seccionSubtitle = 'Sección ' + cusecStr; } } else if (cusecStr) { seccionSubtitle = 'Sección ' + cusecStr; } var diffParties = []; var diffMap = [{ key: 'vox_dif', name: 'Vox' }, { key: 'pp_dif', name: 'PP' }, { key: 'podemos_dif', name: 'Podemos' }, { key: 'psoe_dif', name: 'PSOE' }]; diffMap.forEach(function (item) { var val = props[item.key]; var num = parseDiff(val); if (num !== null) { diffParties.push({ name: item.name, diff: num }); } }); diffParties.sort(function (a, b) { return b.diff - a.diff; }); var resultsHtml = ''; if (diffParties.length === 0) { resultsHtml = '<div style="font-size:12px;color:#767676;padding:4px 0;">Sin datos de diferencia</div>'; } else { diffParties.forEach(function (item) { var partyColor = getColorForParty(item.name); var diffText = formatDiff(item.diff); var barWidth = Math.min(Math.round((Math.abs(item.diff) / 25) * 100), 100); var numColor = item.diff > 0 ? '#107c10' : (item.diff < 0 ? '#d83b01' : '#555555'); resultsHtml += '<div class="voc-party-row">' + '<div class="voc-party-info">' + '<span class="voc-party-dot" style="background-color:' + partyColor + ';"></span>' + '<span class="voc-party-name" title="' + item.name + '">' + item.name + '</span>' + '</div>' + '<div class="voc-party-bar-track">' + '<div class="voc-party-bar-fill" style="width:' + barWidth + '%; background-color:' + partyColor + ';"></div>' + '</div>' + '<span class="voc-party-pct" style="color:' + numColor + ';">' + diffText + '</span>' + '</div>'; }); } var htmlContent = '<div class="voc-custom-tooltip">' + '<div class="voc-tooltip-header">' + '<span class="voc-tooltip-title">' + localidad + '</span>' + (seccionSubtitle ? '<span class="voc-tooltip-subtitle">' + seccionSubtitle + '</span>' : '') + '</div>' + '<div class="voc-tooltip-results">' + resultsHtml + '</div>' + '</div>'; popup.setLngLat(e.lngLat).setHTML(htmlContent).addTo(map); }); map.on('mouseleave', 'diferencia-fill', function () { map.getCanvas().style.cursor = ''; popup.remove(); }); var resetButton = document.createElement('div'); resetButton.className = 'maplibregl-ctrl maplibregl-ctrl-group'; resetButton.innerHTML = '<button style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;" title="Reiniciar vista"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M16 24V16H24V19H19V24H16ZM5 24V19H0V16H8V24H5ZM16 8V0H19V5H24V8H16ZM8 8H0V5H5V0H8V8Z" fill="#202020"/></svg></button>'; resetButton.onclick = function () { if (!bounds.isEmpty()) { map.fitBounds(bounds, { padding: 30 }); } }; map.addControl({ onAdd: function () { return resetButton; }, onRemove: function () { resetButton.parentNode.removeChild(resetButton); } }, 'bottom-right'); function ejecutarBusqueda() { var query = document.getElementById('voc-map-search-input').value.trim(); if (!query) return; var searchUrl = 'https://nominatim.openstreetmap.org/search?format=json&countrycodes=es&q=' + encodeURIComponent(query); fetch(searchUrl).then(function (res) { return res.json(); }).then(function (results) { if (results && results.length > 0) { map.flyTo({ center: [parseFloat(results[0].lon), parseFloat(results[0].lat)], zoom: 14, essential: true }); } else { alert('No se encontraron resultados para la búsqueda.'); } }).catch(function (err) { console.error('Error al realizar la búsqueda:', err); }); } document.getElementById('voc-map-search-btn').onclick = ejecutarBusqueda; document.getElementById('voc-map-search-input').addEventListener('keypress', function (e) { if (e.key === 'Enter') ejecutarBusqueda(); }); } map.on('load', function () { if (typeof DATOS_DIFERENCIA !== 'undefined') { cargarDatosEnMapa(DATOS_DIFERENCIA); } else { fetch(geojsonUrl, { mode: 'cors' }).then(function (response) { if (!response.ok) { throw new Error('Error al cargar el archivo GeoJSON: ' + response.statusText); } return response.json(); }).then(function (data) { cargarDatosEnMapa(data); }).catch(function (error) { console.error('Error durante la carga o procesamiento de datos:', error); }); } }); </script>
+</body>
+
+</html>
