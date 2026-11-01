@@ -19,7 +19,7 @@ export async function renderMapaDiferencia(containerId, options = {}) {
 
   const dataUrl = (options.dataUrl || '/datos').replace(/\/$/, '');
   const styleUrl = options.styleUrl || 'https://static.hoy.es/comun/html/base_DW_gray.json';
-  const geojsonUrl = `${dataUrl}/diferencia_votos_extremadura_limpio.geojson`;
+  const geojsonUrl = dataUrl.endsWith('.geojson') ? dataUrl : `${dataUrl}/diferencia_votos_extremadura_limpio.geojson`;
 
   const { canvasEl, searchInput, searchBtn } = inicializarDOMContenedor(container);
 

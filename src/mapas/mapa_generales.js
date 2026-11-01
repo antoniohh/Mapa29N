@@ -20,7 +20,7 @@ export async function renderMapaGenerales(containerId, options = {}) {
 
   const dataUrl = (options.dataUrl || '/datos').replace(/\/$/, '');
   const styleUrl = options.styleUrl || 'https://static.hoy.es/comun/html/base_DW_gray.json';
-  const geojsonUrl = `${dataUrl}/secciones_extremadura_votos.geojson`;
+  const geojsonUrl = dataUrl.endsWith('.geojson') ? dataUrl : `${dataUrl}/secciones_extremadura_votos.geojson`;
 
   const { canvasEl, searchInput, searchBtn } = inicializarDOMContenedor(container);
 

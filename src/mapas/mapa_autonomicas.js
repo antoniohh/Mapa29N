@@ -20,7 +20,7 @@ export async function renderMapaAutonomicas(containerId, options = {}) {
 
   const dataUrl = (options.dataUrl || '/datos').replace(/\/$/, '');
   const styleUrl = options.styleUrl || 'https://static.hoy.es/comun/html/base_DW_gray.json';
-  const geojsonUrl = `${dataUrl}/resultados-censo-21d.geojson`;
+  const geojsonUrl = dataUrl.endsWith('.geojson') ? dataUrl : `${dataUrl}/resultados-censo-21d.geojson`;
 
   const { canvasEl, searchInput, searchBtn } = inicializarDOMContenedor(container);
 
