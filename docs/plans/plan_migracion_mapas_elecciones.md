@@ -70,21 +70,30 @@ src/
 
 ---
 
-## 5. Estrategia de Despliegue en Méthode
+## 5. Estrategia de Despliegue en Méthode (Release Oficial v1.2.0)
 
-1. **Compilación:**
+1. **Compilación de producción:**
    ```bash
    npm run build
    ```
-   Genera el archivo `dist/mapas-elecciones.js`.
-2. **Publicación:**
-   Subir el código a GitHub y generar un release con **Tag de Git** (ej: `@v1.0.0`) para evitar problemas de caché en el CDN de jsDelivr.
-3. **Inserción en Méthode (Módulo Código):**
+   Genera el archivo autónomo `dist/mapas-elecciones.js` (con Web Worker y estilos CSS inlined).
+
+2. **Publicación en GitHub:**
+   Subir el código a GitHub y generar la release con tag de versión (ej: `@v1.2.0`) para garantizar la inmutabilidad y caché perpetua en el CDN de jsDelivr.
+
+3. **Inserción en Méthode (Módulo Código HTML):**
    ```html
-   <script defer src="https://cdn.jsdelivr.net/gh/tu-organizacion/mapas_elecciones_29N@v1.0.0/dist/mapas-elecciones.js"></script>
+   <script defer src="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.2.0/dist/mapas-elecciones.js"></script>
 
    <div id="mapa-elecciones-extremadura"
         data-mapa="autonomicas"
-        data-data-url="https://cdn.jsdelivr.net/gh/tu-organizacion/mapas_elecciones_29N@v1.0.0/public/datos/">
+        data-data-url="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.2.0/dist/datos">
    </div>
    ```
+
+---
+
+## 6. Estado del Plan
+
+* **Estado:** ✅ **Completado y validado en producción (Release v1.2.0)**.
+* **Hitos alcanzados:** Modularización ES6, inlining del Web Worker MapLibre GL, saneamiento de GeoJSON, panel de validación editorial vertical (`index.html`) y eliminación de archivos heredados.

@@ -3,7 +3,7 @@
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](#)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](#)
 [![MapLibre GL](https://img.shields.io/badge/MapLibre_GL-396FEE?style=for-the-badge&logo=maplibre&logoColor=white)](#)
-[![Version](https://img.shields.io/badge/Version-v1.1.0-blue?style=for-the-badge)](#)
+[![Version](https://img.shields.io/badge/Version-v1.2.0-blue?style=for-the-badge)](#)
 [![Licencia Vocento](https://img.shields.io/badge/Licencia-Vocento-e53e3e?style=for-the-badge)](#)
 
 Librería empaquetada de mapas interactivos electorales de Extremadura por secciones censales para su integración en el CMS **Méthode** (HOY.es / Grupo Vocento).
@@ -14,10 +14,15 @@ Diseñado para generar un único archivo JavaScript embebible (`dist/mapas-elecc
 
 ## 📋 Control de Versiones (Changelog)
 
+### [v1.2.0] - 2026-11-01 · *Release de Producción*
+* **Inlining del Web Worker de MapLibre GL:** Solucionado de raíz el fallo de carga del Web Worker externo (`Worker failed to load`). El código del worker viaja 100% autocontenido en memoria mediante un `Blob URL` dentro de `dist/mapas-elecciones.js`, garantizando total autonomía en CMS Méthode sin peticiones adicionales.
+* **Diseño vertical editorial en `index.html`:** Reestructuración del panel interactivo en una columna vertical centrada de 880px, emulando la maquetación final de lectura de los reportajes y noticias en *HOY.es*.
+* **Documentación comparativa ampliada:** Incorporación del análisis técnico exhaustivo [docs/analisis_maplibre_gl_vs_leaflet.md](file:///home/antoniohh/Proyectos/Mapa29N/docs/analisis_maplibre_gl_vs_leaflet.md) justificando el uso de WebGL2 para renderizar más de 4.500 polígonos concurrentes.
+* **Consolidación de CDN:** URLs de producción unificadas y apuntadas a la versión inmutable `@v1.2.0`.
+
 ### [v1.1.0] - 2026-11-01
 * **Unificación de datos a GeoJSON estándar:** Eliminada la dependencia y referencias al archivo legado `datos_diferencia.js`. Los 3 mapas consumen ahora exclusivamente GeoJSON limpios desde el CDN propio.
 * **Depuración del repositorio:** Eliminados los 3 archivos HTML monolíticos heredados (`mapa-*.html`), consolidando la arquitectura modular con Vite.
-* **Nuevo panel de validación (`index.html`):** Vista panorámica simultánea de los 3 mapas en paralelo con leyendas integradas, optimizada para captura de pantalla y validación de redacción.
 * **Mejora en resolución de rutas de datos:** Soporte robusto en `src/mapas/` para URLs absolutas de CDN, rutas relativas y terminaciones directas en `.geojson`.
 
 ### [v1.0.0] - 2026-11-01
@@ -30,8 +35,8 @@ Diseñado para generar un único archivo JavaScript embebible (`dist/mapas-elecc
 
 ## 🚀 Características
 
-* **Bundle Único IIFE:** Genera un único archivo JavaScript (`dist/mapas-elecciones.js`) que inyecta automáticamente sus propios estilos en el `<head>`.
-* **Sin colisiones de DOM:** Estructura modular multinstancia; no utiliza IDs fijos en los elementos internos, permitiendo múltiples mapas por página.
+* **Bundle Único IIFE Autónomo:** Genera un único archivo JavaScript (`dist/mapas-elecciones.js`) con MapLibre GL, Web Worker inlined y estilos CSS inyectados automáticamente.
+* **Sin colisiones de DOM:** Estructura modular multinstancia; no utiliza IDs fijos en los elementos internos, permitiendo múltiples mapas en la misma página.
 * **Autodetección:** Los mapas se inicializan automáticamente mediante atributos HTML `data-mapa` y `data-data-url`.
 * **Datos servidos desde CDN jsDelivr:** GeoJSON servidos de forma rápida, segura e inmutable con cabeceras CORS habilitadas.
 * **Búsqueda geográfica:** Buscador integrado conectado a OpenStreetMap Nominatim y botón de reinicio de vista geográfica.
@@ -51,6 +56,16 @@ Mapa29N/
 │   ├── estilos/
 │   │   └── base_DW_gray.json
 │   └── mapas-elecciones.js           # Bundle único compilado para producción
+├── docs/
+│   ├── analisis_maplibre_gl_vs_leaflet.md  # Comparativa técnica Leaflet vs MapLibre
+│   ├── plans/
+│   │   └── plan_migracion_mapas_elecciones.md
+│   ├── screenshots/
+│   │   └── dashboard_3_mapas.png
+│   └── sessions/
+│       ├── 2026-11-01_sesion_analisis_migracion_vite.md
+│       ├── 2026-11-01_sesion_release_v1_1_0_depuracion_dashboard.md
+│       └── 2026-11-01_sesion_release_v1_2_0_produccion.md
 ├── public/
 │   ├── datos/                        # Fuentes de datos GeoJSON locales
 │   └── estilos/                      # Cartografía base local
@@ -67,8 +82,8 @@ Mapa29N/
 │   │   ├── mapa_diferencia.js        # Mapa 1: Mayor subida de votos
 │   │   ├── mapa_autonomicas.js       # Mapa 2: Elecciones autonómicas y participación
 │   │   └── mapa_generales.js         # Mapa 3: Elecciones generales
-│   └── main.js                       # Auto-inicializador e inyector de estilos
-├── index.html                        # Panel de validación simultáneo (3 mapas en paralelo)
+│   └── main.js                       # Auto-inicializador, Web Worker inlined y estilos
+├── index.html                        # Panel editorial vertical (simulación de noticia)
 ├── vite.config.js                    # Configuración de compilación Vite (modo lib IIFE)
 └── package.json
 ```
@@ -86,7 +101,7 @@ Mapa29N/
    ```bash
    npm run dev
    ```
-   Abre `http://localhost:5173` en tu navegador para ver los tres mapas en paralelo.
+   Abre `http://localhost:5173` en tu navegador para ver los tres mapas en columna vertical.
 
 3. **Compilar el paquete para producción:**
    ```bash
@@ -96,30 +111,30 @@ Mapa29N/
 
 ---
 
-## 📰 Integración en CMS Méthode (Guía de Implementación v1.1.0)
+## 📰 Integración en CMS Méthode (Guía Oficial de Producción v1.2.0)
 
 Para insertar cualquier mapa en un artículo o noticia mediante un **Módulo Código HTML**, se incluye el `<script>` y el contenedor `<div>` con los atributos `data-*`:
 
 ```html
-<!-- Cargar el script empaquetado de la versión v1.1.0 -->
-<script defer src="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.1.0/dist/mapas-elecciones.js"></script>
+<!-- Cargar el script empaquetado de producción v1.2.0 -->
+<script defer src="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.2.0/dist/mapas-elecciones.js"></script>
 
 <!-- Opción 1: Mapa de Diferencia de votos (Mayor subida 2019 vs 2023) -->
 <div id="mapa-diferencia"
      data-mapa="diferencia"
-     data-data-url="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.1.0/dist/datos">
+     data-data-url="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.2.0/dist/datos">
 </div>
 
 <!-- Opción 2: Mapa de Elecciones Autonómicas (Ganador + Participación) -->
 <div id="mapa-autonomicas"
      data-mapa="autonomicas"
-     data-data-url="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.1.0/dist/datos">
+     data-data-url="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.2.0/dist/datos">
 </div>
 
 <!-- Opción 3: Mapa de Elecciones Generales (Voto al Congreso) -->
 <div id="mapa-generales"
      data-mapa="generales"
-     data-data-url="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.1.0/dist/datos">
+     data-data-url="https://cdn.jsdelivr.net/gh/antoniohh/Mapa29N@v1.2.0/dist/datos">
 </div>
 ```
 

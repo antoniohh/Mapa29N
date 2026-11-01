@@ -1,6 +1,6 @@
 {
   "name": "mapas-elecciones-extremadura",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "description": "Librería y mapas electorales interactivos de Extremadura para CMS Méthode",
